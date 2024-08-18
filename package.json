@@ -1,0 +1,26 @@
+{
+  "name": "home-automation-meal",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node esbuild.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FPGSchiba/home-automation-meal.git"
+  },
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "esbuild": "^0.15.16",
+    "esbuild-sass-plugin": "^2.4.2"
+  }
+}
