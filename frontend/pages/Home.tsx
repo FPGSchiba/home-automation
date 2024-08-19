@@ -5,6 +5,7 @@ export default function Home() {
     return (
         <div>
             <Link to="/about">About page</Link>
+            <div>This happens too.</div>
         </div>
     );
 }

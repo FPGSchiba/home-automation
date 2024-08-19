@@ -1,7 +1,7 @@
 package main
 
 import (
-	"example.com/automation-meal/router"
+	"fpgschiba.com/automation-meal/router"
 	"github.com/gin-gonic/contrib/static"
 )
 

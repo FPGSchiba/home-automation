@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+}
+
+html {
+  background-image: url("../images/origin-background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body {
+  @import "components/header";
+}

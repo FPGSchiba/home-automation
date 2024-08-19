@@ -1,8 +1,8 @@
 package router
 
 import (
-	"example.com/automation-meal/router/base"
-	"example.com/automation-meal/util"
+	"fpgschiba.com/automation-meal/router/base"
+	"fpgschiba.com/automation-meal/util"
 	"github.com/gin-gonic/gin"
 )
 

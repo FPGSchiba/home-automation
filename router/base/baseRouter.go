@@ -1,7 +1,7 @@
 package base
 
 import (
-	"example.com/automation-meal/util"
+	"fpgschiba.com/automation-meal/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

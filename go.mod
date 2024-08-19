@@ -1,4 +1,4 @@
-module example.com/automation-meal
+module fpgschiba.com/automation-meal
 
 go 1.23.0
 
