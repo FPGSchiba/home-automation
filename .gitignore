@@ -33,3 +33,4 @@ public/assets/index.js
 .next
 # Sentry Config File
 .env.sentry-build-plugin
+data/

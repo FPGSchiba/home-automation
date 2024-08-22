@@ -1,0 +1,82 @@
+package database
+
+import (
+	"context"
+	"fpgschiba.com/automation-meal/models"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+var usersCollection *mongo.Collection
+
+func GetUsersCollection(client *mongo.Client) *mongo.Collection {
+	if usersCollection != nil {
+		return usersCollection
+	}
+	usersCollection = client.Database(DatabaseName).Collection("users")
+	return usersCollection
+}
+
+func CreateUser(user models.User) (error, string) {
+	client = getClient()
+	usersCollection = GetUsersCollection(client)
+
+	result, err := usersCollection.InsertOne(context.Background(), user)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":     err,
+			"user":      user,
+			"component": "database",
+			"func":      "CreateUser",
+		}).Error()
+		return err, ""
+	}
+	return nil, result.InsertedID.(primitive.ObjectID).Hex()
+}
+
+func DoesEmailExist(email string) (error, bool, string) {
+	client = getClient()
+	usersCollection = GetUsersCollection(client)
+
+	result := usersCollection.FindOne(context.Background(), bson.M{"email": email})
+	if result.Err() != nil {
+		log.WithFields(log.Fields{
+			"error":     result.Err(),
+			"component": "database",
+			"func":      "DoesEmailExist",
+		}).Error()
+		return result.Err(), false, ""
+	}
+	var user models.User
+	err := result.Decode(&user)
+	if err != nil {
+		return err, false, ""
+	}
+	return nil, true, user.ID.Hex()
+}
+
+func PasswordMatchesUser(userId primitive.ObjectID, hashedPassword string) (error, bool, *models.User) {
+	client = getClient()
+	usersCollection = GetUsersCollection(client)
+
+	result := usersCollection.FindOne(context.Background(), bson.M{"_id": userId})
+	if result.Err() != nil {
+		log.WithFields(log.Fields{
+			"error":     result.Err(),
+			"component": "database",
+			"func":      "DoesEmailExist",
+		}).Error()
+		return result.Err(), false, nil
+	}
+	var user models.User
+	err := result.Decode(&user)
+	if err != nil {
+		return err, false, nil
+	}
+	if user.PasswordHash == hashedPassword {
+		return nil, true, &user
+	}
+	return nil, false, nil
+}

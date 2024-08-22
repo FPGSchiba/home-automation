@@ -32,7 +32,6 @@ func JSONLogMiddleware() gin.HandlerFunc {
 			"path":        c.Request.RequestURI,
 			"status":      c.Writer.Status(),
 			"referrer":    c.Request.Referer(),
-			"request_id":  c.Writer.Header().Get("Request-Id"),
 			"api_version": ApiVersion,
 		})
 
