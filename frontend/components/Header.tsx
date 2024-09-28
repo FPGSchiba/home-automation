@@ -8,10 +8,13 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useLocation } from "react-router-dom";
 
+const nonHeaderLocations = ["/login"];
+
 export function Header() {
     const location = useLocation();
 
     return (
+        nonHeaderLocations.includes(location.pathname) ? null :
             <Box sx={{ flexGrow: 1 }} className={"header header-container"}>
                 <AppBar position="static" className={"header header-bar"}>
                     <Toolbar>

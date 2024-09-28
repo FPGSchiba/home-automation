@@ -6,10 +6,20 @@ import (
 	"github.com/gin-gonic/contrib/static"
 )
 
+var frontendPaths = []string{
+	"/",
+	"/login",
+	"/about",
+}
+
 func main() {
 	engine := router.GetRouter()
 
-	engine.Use(static.Serve("/", static.LocalFile("./public/assets/", true)))
+	for _, path := range frontendPaths {
+		engine.Use(static.Serve(path, static.LocalFile("./public/assets/", true)))
+	}
+
+	engine.Use(static.Serve("/login", static.LocalFile("./public/assets/", true)))
 
 	defer database.Disconnect()
 

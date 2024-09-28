@@ -26,14 +26,28 @@ func JSONLogMiddleware() gin.HandlerFunc {
 		// Stop timer
 		duration := fmt.Sprintf("%.2fms", getDurationInMilliseconds(start))
 
-		entry := log.WithFields(log.Fields{
-			"duration":    duration,
-			"method":      c.Request.Method,
-			"path":        c.Request.RequestURI,
-			"status":      c.Writer.Status(),
-			"referrer":    c.Request.Referer(),
-			"api_version": ApiVersion,
-		})
+		var fields log.Fields
+
+		if c.FullPath() != "" {
+			fields = log.Fields{
+				"duration":    duration,
+				"method":      c.Request.Method,
+				"path":        c.Request.RequestURI,
+				"status":      c.Writer.Status(),
+				"referrer":    c.Request.Referer(),
+				"api_version": ApiVersion,
+			}
+		} else {
+			fields = log.Fields{
+				"duration": duration,
+				"method":   c.Request.Method,
+				"path":     c.Request.RequestURI,
+				"status":   c.Writer.Status(),
+				"referrer": c.Request.Referer(),
+			}
+		}
+
+		entry := log.WithFields(fields)
 
 		if c.Writer.Status() >= 500 {
 			entry.Error(c.Errors.String())

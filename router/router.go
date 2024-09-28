@@ -18,10 +18,14 @@ func GetRouter() *gin.Engine {
 	apiGroup := router.Group("/api/v1")
 	{
 		apiGroup.GET("/", base.GetVersion)
-		apiGroup.Use(auth.AuthMiddleware())
+		apiGroup.Use(auth.Middleware())
 		rolesGroup := apiGroup.Group("/roles")
 		{
 			rolesGroup.POST("/", roles.CreateRole)
+			rolesGroup.GET("/", roles.ListRoles)
+			rolesGroup.PATCH("/:id", roles.UpdateRole)
+			rolesGroup.DELETE("/:id", roles.DeleteRole)
+			rolesGroup.GET("/:id", roles.GetRole)
 		}
 		usersGroup := apiGroup.Group("/users")
 		{

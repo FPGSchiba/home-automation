@@ -80,3 +80,51 @@ func PasswordMatchesUser(userId primitive.ObjectID, hashedPassword string) (erro
 	}
 	return nil, false, nil
 }
+
+func GetUserIDByEmail(email string) (error, string) {
+	client = getClient()
+	usersCollection = GetUsersCollection(client)
+
+	result := usersCollection.FindOne(context.Background(), bson.M{"email": email})
+	if result.Err() != nil {
+		log.WithFields(log.Fields{
+			"error":     result.Err(),
+			"component": "database",
+			"func":      "GetUserIDByEmail",
+			"email":     email,
+		}).Error()
+		return result.Err(), ""
+	}
+	var user models.User
+	err := result.Decode(&user)
+	if err != nil {
+		return err, ""
+	}
+	return nil, user.ID.Hex()
+}
+
+func GetAllUsers() (error, []models.User) {
+	client = getClient()
+	usersCollection = GetUsersCollection(client)
+
+	cursor, err := usersCollection.Find(context.Background(), bson.M{})
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":     err,
+			"component": "database",
+			"func":      "GetAllUsers",
+		}).Error()
+		return err, nil
+	}
+	var users []models.User
+	err = cursor.All(context.Background(), &users)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":     err,
+			"component": "database",
+			"func":      "GetAllUsers",
+		}).Error()
+		return err, nil
+	}
+	return nil, users
+}

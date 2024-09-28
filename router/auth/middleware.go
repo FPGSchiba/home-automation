@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -21,11 +21,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		authToken := strings.Replace(authHeader, "Bearer ", "", 1)
-		fmt.Println(authToken)
 		if claims, err := VerifyJWTToken(authToken); err != nil {
 			log.WithFields(log.Fields{
 				"authentication": "true",
-				"component":      "AuthMiddleware",
+				"component":      "Middleware",
 				"method":         c.Request.Method,
 				"path":           c.Request.URL.Path,
 				"error":          err.Error(),
@@ -36,14 +35,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			}
 			c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetResponseWithMessage(fmt.Sprintf("Failed token Validation: %s", err.Error())))
 			return
-
 		} else {
-			fmt.Println(claims.Email)
 			c.Set("email", claims.Email)
 			c.Set("id", claims.ID)
-			// TODO: Permission checking
-
-			c.Next()
+			if verifyPermissions(claims.ID, c.Request.URL.Path, c.Request.Method) {
+				c.Next()
+			} else {
+				c.AbortWithStatusJSON(http.StatusForbidden, util.GetResponseWithMessage("You do not have permission to access this resource"))
+			}
 		}
 	}
 }

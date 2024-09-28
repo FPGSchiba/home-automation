@@ -1,15 +1,26 @@
 import {OverridableStringUnion} from "@mui/types";
 import {AlertColor, AlertPropsColorOverrides} from "@mui/material";
 
-export type Notification = {
+export interface Notification {
     message: string
     level: OverridableStringUnion<AlertColor, AlertPropsColorOverrides>
     title: string
     id: string
 }
 
-export type NotifyEvent = {
+export interface NotifyEvent {
     message: string
     level: OverridableStringUnion<AlertColor, AlertPropsColorOverrides>
     title: string
+}
+
+export interface IUser {
+    id: string
+    displayName: string
+    email: string
+    profilePictureUrl: string
+}
+
+export interface IUserInfo  extends IUser {
+    token: string
 }

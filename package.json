@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node esbuild.js",
+    "dev": "node esbuild.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +19,10 @@
     "@mui/material": "^5.16.7",
     "@sentry/esbuild-plugin": "^2.22.2",
     "@sentry/react": "^8.26.0",
+    "@types/node": "^22.7.4",
+    "axios": "^1.7.7",
+    "https-browserify": "^1.0.0",
+    "js-cookie": "^3.0.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.4.4",
@@ -26,9 +30,13 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
+    "autoprefixer": "^10.4.20",
     "esbuild": "^0.23.1",
-    "esbuild-sass-plugin": "^3.3.1"
+    "esbuild-sass-plugin": "^3.3.1",
+    "node-stdlib-browser": "^1.2.1",
+    "postcss": "^8.4.47"
   }
 }

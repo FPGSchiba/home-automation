@@ -1,8 +1,12 @@
-.header {
-  .header-container {
-    padding: 100px;
-  }
+.header-container {
+  margin-left: 10px;
+  margin-right: 10px;
+  position: sticky;
+  top: 10px;
+  z-index: 1000;
+}
 
+.header {
   .header-bar {
     border-radius: 15px;
   }

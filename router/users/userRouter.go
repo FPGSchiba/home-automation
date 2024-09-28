@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fpgschiba.com/automation-meal/database"
 	"fpgschiba.com/automation-meal/util"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -54,7 +55,28 @@ func UpdateUser(c *gin.Context) {
 }
 
 func ListUsers(c *gin.Context) {
-	return
+	err, users := database.GetAllUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponse(err))
+		return
+	}
+	var userProfiles []UserProfile
+	for _, user := range users {
+		userProfiles = append(userProfiles, UserProfile{
+			Id:                user.ID.Hex(),
+			Email:             user.Email,
+			DisplayName:       user.DisplayName,
+			ProfilePictureUrl: user.ProfilePictureURL,
+		})
+	}
+	c.JSON(http.StatusOK, ListUsersResponse{
+		Response: util.Response{
+			Status:  "success",
+			Message: "Users retrieved successfully",
+		},
+		Users: userProfiles,
+	})
+
 }
 
 func ResetPassword(c *gin.Context) {

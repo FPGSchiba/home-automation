@@ -1,5 +1,14 @@
 package users
 
+import "fpgschiba.com/automation-meal/util"
+
+type UserProfile struct {
+	Id                string `json:"id"`
+	Email             string `json:"email"`
+	DisplayName       string `json:"displayName"`
+	ProfilePictureUrl string `json:"profilePictureUrl"`
+}
+
 type registerRequest struct {
 	Email       string `json:"email" binding:"required"`
 	Password    string `json:"password" binding:"required"`
@@ -17,4 +26,9 @@ type updateUserRequest struct {
 
 type passwordResetRequest struct {
 	NewPassword string `json:"newPassword" binding:"required"`
+}
+
+type ListUsersResponse struct {
+	util.Response
+	Users []UserProfile `json:"users"`
 }
