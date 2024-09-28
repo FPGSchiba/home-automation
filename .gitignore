@@ -34,3 +34,5 @@ public/assets/index.js
 # Sentry Config File
 .env.sentry-build-plugin
 data/
+private_key.pem
+public_key.pem
