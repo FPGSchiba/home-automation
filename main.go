@@ -9,6 +9,8 @@ import (
 var frontendPaths = []string{
 	"/",
 	"/login",
+	"/reset-password",
+	"/not-found",
 	"/about",
 }
 

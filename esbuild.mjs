@@ -36,7 +36,8 @@ esbuild
             */
         ],
         loader: {
-            ".png": "dataurl"
+            ".png": "dataurl",
+            ".webp": "dataurl",
         }
     })
     .then((r) =>  {

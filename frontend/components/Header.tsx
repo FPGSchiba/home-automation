@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useLocation } from "react-router-dom";
 
-const nonHeaderLocations = ["/login"];
+const nonHeaderLocations = ["/login", "/reset-password"];
 
 export function Header() {
     const location = useLocation();

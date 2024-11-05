@@ -1,6 +1,6 @@
 import React from "react";
 import * as Sentry from "@sentry/react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import { Header } from "./components/Header";
@@ -8,6 +8,8 @@ import { Notification } from "./components/Notification";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import PrivateRoute from "./components/PrivateRoutes";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import NotFound from "./pages/NotFound";
 
 const darkTheme = createTheme({
     palette: {
@@ -56,6 +58,9 @@ class App extends React.Component {
                             <Route path="/about" element={<About />} />
                         </Route>
                         <Route path="/login" element={<Login />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
+                        <Route path="/not-found" element={<NotFound />} />
+                        <Route path="*" element={<Navigate  to="/not-found" />} />
                     </Routes>
                 </BrowserRouter>
             </ThemeProvider>
