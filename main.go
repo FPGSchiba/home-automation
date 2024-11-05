@@ -15,6 +15,8 @@ var frontendPaths = []string{
 func main() {
 	engine := router.GetRouter()
 
+	database.StartMigrations()
+
 	for _, path := range frontendPaths {
 		engine.Use(static.Serve(path, static.LocalFile("./public/assets/", true)))
 	}
