@@ -5,6 +5,7 @@ import autoprefixer from 'autoprefixer';
 import plugin from 'node-stdlib-browser/helpers/esbuild/plugin';
 import stdLibBrowser from 'node-stdlib-browser';
 import {sentryEsbuildPlugin} from "@sentry/esbuild-plugin";
+import { YAMLPlugin } from "esbuild-yaml";
 import path from 'path';
 
 esbuild
@@ -27,6 +28,7 @@ esbuild
                 },
             }),
             plugin(stdLibBrowser),
+            YAMLPlugin({}),
             /*
             sentryEsbuildPlugin({
                 authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -38,6 +40,7 @@ esbuild
         loader: {
             ".png": "dataurl",
             ".webp": "dataurl",
+            ".yaml": "dataurl",
         }
     })
     .then((r) =>  {

@@ -28,7 +28,7 @@ func verifyPermissions(userId string, path string, method string) bool {
 func hasPermission(permissions []roles.Permission, path string, method string) bool {
 	for _, permission := range permissions {
 		for _, route := range permission.Routes {
-			match, err := doublestar.Match(route.Path, path) // needed support for ** to match separators as well
+			match, err := doublestar.Match(route.Path, path)
 			println(match)
 			if err != nil {
 				return false

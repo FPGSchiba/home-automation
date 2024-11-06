@@ -10,15 +10,16 @@ export function getUserInfoFromCookies(): { user: IUserInfo } | undefined {
     return Object.keys(data).length ? data : undefined;
 }
 
-export function checkUserInfo(callback: (currentAuth: boolean) => void) {
+export function checkUserInfo(): boolean {
     const userInfo = getUserInfoFromCookies();
     if (userInfo) {
         if (userInfo?.user?.id) {
-            callback(true);
+            console.log("User is authenticated");
+            return true;
         }
-        callback(false);
+        return false;
     } else {
-        callback(false);
+        return false;
     }
 }
 

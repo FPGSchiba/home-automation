@@ -2,7 +2,7 @@
 import axios, { AxiosInstance } from "axios";
 import https from 'https';
 import {IUserInfo} from "../store/types";
-const UNAUTHORIZED_CODE = 401;
+import config from "../conf.yaml";
 
 /**
  * Initialization needs to be done before calling any method,
@@ -26,11 +26,16 @@ export enum ApiStatus {
 }
 
 class AutomationAPI {
-    protected static endpoint: AxiosInstance;
+    protected static userEndpoint: AxiosInstance;
     protected static authEndpoint: AxiosInstance;
+    protected static mealEndpoint: AxiosInstance;
+    protected static financeEndpoint: AxiosInstance;
 
-    public async init(): Promise<void> {
-        if (AutomationAPI.endpoint !== undefined) {
+    public init(): AutomationAPI {
+        if (AutomationAPI.userEndpoint !== undefined &&
+            AutomationAPI.authEndpoint !== undefined &&
+            AutomationAPI.mealEndpoint !== undefined &&
+            AutomationAPI.financeEndpoint !== undefined) {
             return;
         }
 
@@ -39,26 +44,47 @@ class AutomationAPI {
             rejectUnauthorized: false,
         });
 
-        const apiURL = "http://localhost:8080/api/v1"
-        const authURL = "http://localhost:8080/auth"
+        const apiPath = config.frontend["api-path"];
+        const authPath = config.frontend["auth-path"];
+        const userApiHost = config.frontend["user-api-host"];
+        const mealApiHost = config.frontend["meal-api-host"];
+        const financeApiHost = config.frontend["finance-api-host"];
 
-        AutomationAPI.endpoint = axios.create({
-            baseURL: apiURL,
+        AutomationAPI.userEndpoint = axios.create({
+            baseURL: userApiHost + apiPath,
             httpsAgent,
         });
 
         AutomationAPI.authEndpoint = axios.create({
-            baseURL: authURL,
+            baseURL: userApiHost + authPath,
             httpsAgent,
         });
+
+        AutomationAPI.mealEndpoint = axios.create({
+            baseURL: mealApiHost + apiPath,
+            httpsAgent,
+        });
+
+        AutomationAPI.financeEndpoint = axios.create({
+            baseURL: financeApiHost + apiPath,
+            httpsAgent,
+        });
+
+        return this;
     }
 
     public async login(email: string, password: string): Promise<{ message: string, status: ApiStatus, token?: string, user?: IUserInfo }> {
-        return AutomationAPI.authEndpoint.post('/login', {
-            email,
-            password,
-        });
+        try {
+            const response = await AutomationAPI.authEndpoint.post('/login', {
+                email,
+                password,
+            });
+            return response.data;
+        }
+        catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
     }
 }
 
-export default new AutomationAPI();
+export default new AutomationAPI().init();

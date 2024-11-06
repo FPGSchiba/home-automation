@@ -1,0 +1,6 @@
+frontend:
+  user-api-host: "http://localhost:8080"
+  meal-api-host: "http://localhost:8080"
+  finance-api-host: "http://localhost:3000"
+  auth-path: "/auth/"
+  api-path: "/api/v1/"

@@ -94,7 +94,7 @@ func migrationFirstUser(client *mongo.Client) error {
 			{
 				Routes: []roles.Route{
 					{
-						Path: "*",
+						Path: "**",
 						Methods: []string{
 							"GET",
 							"POST",

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
-import {useNotificationStore} from "../store";
+import {useNotificationStore} from "../store/notification";
 import Typography from "@mui/material/Typography";
 
 export default function Home() {

@@ -1,33 +1,13 @@
-import { CircularProgress } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { checkUserInfo } from '../services/util';
+import React from 'react';
+import {Navigate, Outlet} from 'react-router-dom';
+import {useUserStore} from "../store/user";
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const PrivateRoute = () => {
-    const [loaded, setLoaded] = useState(false);
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const setVars = (currentAuth: boolean) => {
-        setLoaded(true);
-        if (!currentAuth) {
-            navigate('/login');
-        }
-    }
-    useEffect(() => {
-        if (!loaded) {
-            setLoaded(true);
-            checkUserInfo((currentAuth: boolean) => {
-                setVars(currentAuth);
-            });
-        }
-
-    }, [location])
+    const authenticated = useUserStore((state) => state.authenticated);
 
     // If authorized, return an outlet that will render child elements
     // If not, return element that will navigate to login page
-    return loaded ? <Outlet /> : <CircularProgress />
+    return authenticated ? <Outlet /> : <Navigate to={"/login"} />
 }
 
 export default PrivateRoute;

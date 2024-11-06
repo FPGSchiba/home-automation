@@ -9,8 +9,10 @@ html {
 body {
   // Components
   @import "components/header";
+  @import "components/notification";
 
   // Pages
   @import "pages/home";
   @import "pages/login";
+  @import "pages/reset-password";
 }
