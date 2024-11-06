@@ -28,8 +28,12 @@ go.work.sum
 
 node_modules
 
+public/assets/frontend/
 public/assets/resources/
 public/assets/index.js
+public/assets/index.js.map
+public/assets/conf.js
+public/assets/conf.js.map
 .next
 # Sentry Config File
 .env.sentry-build-plugin
