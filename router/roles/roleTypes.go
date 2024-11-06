@@ -12,11 +12,13 @@ type Route struct {
 
 type roleCreationRequest struct {
 	RoleName    string       `json:"roleName" binding:"required"`
+	Description string       `json:"description"`
 	Permissions []Permission `json:"permissions" binding:"required"`
 }
 
 type roleUpdateRequest struct {
 	RoleId      string       `json:"roleId" binding:"required"`
 	RoleName    string       `json:"roleName"`
+	Description string       `json:"description"`
 	Permissions []Permission `json:"permissions"`
 }

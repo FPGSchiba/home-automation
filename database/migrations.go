@@ -89,7 +89,8 @@ func migrationFirstUser(client *mongo.Client) error {
 	roleAssignmentsCollection := GetRoleAssignmentsCollection(client)
 	//creating roles
 	roleResult, err := rolesCollection.InsertOne(context.Background(), models.Role{
-		Name: "SuperUser",
+		Name:        "SuperUser",
+		Description: "SuperUser has all permissions",
 		Permissions: []roles.Permission{
 			{
 				Routes: []roles.Route{
