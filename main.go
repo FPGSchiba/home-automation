@@ -11,7 +11,13 @@ var frontendPaths = []string{
 	"/login",
 	"/reset-password",
 	"/not-found",
-	"/about",
+	"/home",
+	"/meal",
+	"/finance",
+	"/users",
+	"/settings",
+	"/profile",
+	"/users/roles",
 }
 
 func main() {

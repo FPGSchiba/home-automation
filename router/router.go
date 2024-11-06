@@ -3,6 +3,7 @@ package router
 import (
 	"fpgschiba.com/automation-meal/router/auth"
 	"fpgschiba.com/automation-meal/router/base"
+	"fpgschiba.com/automation-meal/router/permissions"
 	"fpgschiba.com/automation-meal/router/roles"
 	"fpgschiba.com/automation-meal/router/users"
 	"fpgschiba.com/automation-meal/util"
@@ -36,6 +37,10 @@ func GetRouter() *gin.Engine {
 			usersGroup.DELETE("/:id", users.DeleteUser)
 			usersGroup.PUT("/:id", users.UpdateUser)
 			usersGroup.POST("/:id/reset-password", users.ResetPassword)
+		}
+		permissionsGroup := apiGroup.Group("/permissions")
+		{
+			permissionsGroup.GET("/", permissions.ListPermissions)
 		}
 	}
 	router.POST("/auth/login", auth.Login)

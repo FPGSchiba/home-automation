@@ -3,22 +3,7 @@ import axios, { AxiosInstance } from "axios";
 import https from 'https';
 import {IUserInfo} from "../store/types";
 import config from "../conf.yaml";
-
-/**
- * Initialization needs to be done before calling any method,
- * @param target
- * @param propertyKey
- * @param descriptor
- */
-function wrapInit(target: AutomationAPI, propertyKey: string | symbol, descriptor: PropertyDescriptor): void {
-    const originalMethod = descriptor.value;
-    const newMethod = async (...args: any[]): Promise<any> => {
-        await target.init();
-        return originalMethod(...args);
-    };
-    descriptor.value = newMethod.bind(target);
-}
-
+import {Permission} from "../store/user";
 
 export enum ApiStatus {
     SUCCESS = 'success',
@@ -30,8 +15,18 @@ class AutomationAPI {
     protected static authEndpoint: AxiosInstance;
     protected static mealEndpoint: AxiosInstance;
     protected static financeEndpoint: AxiosInstance;
+    private token: string;
+    private static instance: AutomationAPI;
 
-    public init(): AutomationAPI {
+
+    static getInstance(): AutomationAPI {
+        if (!AutomationAPI.instance) {
+            AutomationAPI.instance = new AutomationAPI().init();
+        }
+        return AutomationAPI.instance;
+    }
+
+    public init(): this {
         if (AutomationAPI.userEndpoint !== undefined &&
             AutomationAPI.authEndpoint !== undefined &&
             AutomationAPI.mealEndpoint !== undefined &&
@@ -73,6 +68,10 @@ class AutomationAPI {
         return this;
     }
 
+    public setToken(token: string): void {
+        this.token = token;
+    }
+
     public async login(email: string, password: string): Promise<{ message: string, status: ApiStatus, token?: string, user?: IUserInfo }> {
         try {
             const response = await AutomationAPI.authEndpoint.post('/login', {
@@ -85,6 +84,20 @@ class AutomationAPI {
             return {message: reason.response.data.message, status: ApiStatus.ERROR};
         }
     }
+
+    public async listPermissions(): Promise<{ message: string, status: ApiStatus, permissions?: Permission[] }> {
+        try {
+            const response = await AutomationAPI.userEndpoint.get('/permissions', {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return response.data;
+        }
+        catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
+    }
 }
 
-export default new AutomationAPI().init();
+export default AutomationAPI.getInstance();

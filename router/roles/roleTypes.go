@@ -1,7 +1,7 @@
 package roles
 
 type Permission struct {
-	Routes []Route `json:"paths" binding:"required"`
+	Routes []Route `json:"routes" binding:"required"`
 }
 
 type Route struct {
