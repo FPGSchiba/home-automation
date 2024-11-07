@@ -1,0 +1,42 @@
+@use "sass:meta";
+
+.users {
+  &.users-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 100%;
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+
+  &.users-navigation {
+    &.users-navigation-wrapper {
+      height: 100%;
+      width: 20rem;
+      border-radius: 15px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+    &.users-navigation-tab {
+      display: inline-flex;
+      min-height: 65px;
+      height: 65px;
+      justify-content: flex-start;
+      padding-left: 3.5rem;
+    }
+  }
+
+  &.users-content {
+    &.users-content-wrapper {
+      height: 100%;
+      width: calc(100% - 20rem);
+      margin-left: 10px;
+      margin-right: 10px;
+      border-radius: 15px;
+    }
+  }
+}
+
+@include meta.load-css("list");

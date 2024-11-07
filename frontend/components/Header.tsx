@@ -51,23 +51,23 @@ export function Header() {
     useEffect(() => {
         const groupPart = /\/\w*\/?/.exec(location.pathname);
         if (groupPart) {
-            switch (groupPart[0]) {
-                case '/home':
+            switch (groupPart[0].replaceAll('/', '')) {
+                case 'home':
                     setValue('/home');
                     break;
-                case '/':
+                case '':
                     setValue('/home');
                     break;
-                case '/finance':
+                case 'finance':
                     setValue('/finance');
                     break;
-                case '/meal':
+                case 'meal':
                     setValue('/meal');
                     break;
-                case '/settings':
+                case 'settings':
                     setValue('/settings');
                     break;
-                case '/users':
+                case 'users':
                     setValue('/users');
                     break;
                 default:

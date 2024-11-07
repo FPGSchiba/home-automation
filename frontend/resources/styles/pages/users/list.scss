@@ -1,0 +1,32 @@
+.users {
+  &.users-list {
+    &.users-list-wrapper{
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    &.users-list-table {
+      &.users-list-table-wrapper {
+        margin-top: 10px;
+        width: 100%;
+      }
+
+      &.users-list-table-grid {
+        width: 100%;
+      }
+
+      &.users-list-table-rolechip {
+        margin-right: 5px;
+      }
+
+      &.users-list-table-rolestack {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+    }
+  }
+}
