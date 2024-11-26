@@ -29,7 +29,7 @@ func hasPermission(permissions []roles.Permission, path string, method string) b
 	for _, permission := range permissions {
 		for _, route := range permission.Routes {
 			match, err := doublestar.Match(route.Path, path)
-			println(match)
+			println(path)
 			if err != nil {
 				return false
 			}

@@ -46,16 +46,19 @@ func Login(c *gin.Context) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "test",
-			Subject:   "somebody",
-			ID:        "1",
-			Audience:  []string{"somebody_else"},
+			Issuer:    "schiba.com",
+			Subject:   "Home Automation",
+			ID:        userId,
 		},
 	}
 	token, err := generateJWTToken(claims)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error generating token: %s", err.Error())))
+		return
+	}
+	err = database.InsertAuthEvent("login", userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error logging Event: %s", err.Error())))
 		return
 	}
 	c.JSON(http.StatusOK, loginResponse{
