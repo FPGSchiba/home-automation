@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"fpgschiba.com/automation-meal/database"
+	"fpgschiba.com/automation-meal/models"
 	"fpgschiba.com/automation-meal/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -56,7 +57,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error generating token: %s", err.Error())))
 		return
 	}
-	err = database.InsertAuthEvent("login", userId)
+	err = database.InsertAuthEvent(models.EventLogin, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error logging Event: %s", err.Error())))
 		return

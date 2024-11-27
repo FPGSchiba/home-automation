@@ -2,11 +2,18 @@ package models
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+// Components
 const (
-	EventAuth    = "auth"
-	EventUsers   = "users"
-	EventFinance = "finance"
-	EventMeals   = "meals"
+	ComponentAuth    = "auth"
+	ComponentUsers   = "users"
+	ComponentFinance = "finance"
+	ComponentMeals   = "meals"
+)
+
+// Event types
+const (
+	EventLogin         = "login"
+	EventPasswordReset = "password-reset"
 )
 
 type Event struct {

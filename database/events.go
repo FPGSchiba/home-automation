@@ -19,7 +19,7 @@ func GetEventsCollection(client *mongo.Client) *mongo.Collection {
 	return eventsCollection
 }
 
-func insertEvent(event Event) error {
+func insertEvent(event models.Event) error {
 	client = getClient()
 	eventsCollection := GetEventsCollection(client)
 
@@ -40,7 +40,7 @@ func InsertAuthEvent(eventName string, userId string) error {
 	event := models.Event{
 		Name:      eventName,
 		UserId:    userId,
-		Component: models.EventAuth,
+		Component: models.ComponentAuth,
 		TimeStamp: primitive.NewDateTimeFromTime(time.Now()),
 	}
 	return insertEvent(event)
