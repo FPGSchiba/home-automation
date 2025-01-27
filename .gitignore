@@ -42,3 +42,4 @@ private_key.pem
 public_key.pem
 
 tmp
+config.yaml

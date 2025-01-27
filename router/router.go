@@ -2,6 +2,7 @@ package router
 
 import (
 	"fpgschiba.com/automation-meal/router/auth"
+	"fpgschiba.com/automation-meal/router/backups"
 	"fpgschiba.com/automation-meal/router/base"
 	"fpgschiba.com/automation-meal/router/permissions"
 	"fpgschiba.com/automation-meal/router/roles"
@@ -41,6 +42,10 @@ func GetRouter() *gin.Engine {
 		permissionsGroup := apiGroup.Group("/permissions")
 		{
 			permissionsGroup.GET("/", permissions.ListPermissions)
+		}
+		backupsGroup := apiGroup.Group("/backups")
+		{
+			backupsGroup.GET("/", backups.ListBackups)
 		}
 	}
 	router.POST("/auth/login", auth.Login)
