@@ -19,7 +19,8 @@ func StartMigrations() {
 	client = getClient()
 	//getting collection
 	migrations := map[string]interface{}{
-		"first_user": migrationFirstUser,
+		"first_user":       migrationFirstUser,
+		"add_job_types_v1": migrationAddJobTypesV1,
 	}
 	migrationCollection := GetMigrationCollection(client)
 	doneMigrations, err := migrationCollection.Find(context.Background(), bson.M{})
@@ -124,6 +125,71 @@ func migrationFirstUser(client *mongo.Client) error {
 	_, err = roleAssignmentsCollection.InsertOne(context.Background(), models.RoleAssignment{
 		RoleID: roleResult.InsertedID.(primitive.ObjectID),
 		UserID: userResult.InsertedID.(primitive.ObjectID),
+	})
+	return err
+}
+
+func migrationAddJobTypesV1(client *mongo.Client) error {
+	jobTypesCollection := GetJobTypesCollection(client)
+	_, err := jobTypesCollection.InsertOne(context.Background(), models.JobType{
+		Identifier: "sftp",
+		Name:       "SFTP",
+		ConfigurationFields: []models.ConfigurationField{
+			{
+				Name:        "Host",
+				Description: "The Host of the SFTP Server",
+				Type:        "string",
+			},
+			{
+				Name:        "Port",
+				Description: "The Port of the SFTP Server",
+				Type:        "number",
+			},
+			{
+				Name:        "Username",
+				Description: "The Username for the SFTP Server",
+				Type:        "string",
+			},
+			{
+				Name:        "Password",
+				Description: "The Password for the SFTP Server",
+				Type:        "string",
+			},
+			{
+				Name:        "Path",
+				Description: "The Path to the File on the SFTP Server",
+				Type:        "string",
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+	_, err = jobTypesCollection.InsertOne(context.Background(), models.JobType{
+		Identifier: "mongo",
+		Name:       "MongoDB",
+		ConfigurationFields: []models.ConfigurationField{
+			{
+				Name:        "Host",
+				Description: "The Host of the MongoDB Server",
+				Type:        "string",
+			},
+			{
+				Name:        "DatabaseName",
+				Description: "The Name of the Database on the MongoDB Server to authenticate the user on, use '/' for no authentication",
+				Type:        "string",
+			},
+			{
+				Name:        "Username",
+				Description: "The Username for the MongoDB Server",
+				Type:        "string",
+			},
+			{
+				Name:        "Password",
+				Description: "The Password for the MongoDB Server",
+				Type:        "string",
+			},
+		},
 	})
 	return err
 }

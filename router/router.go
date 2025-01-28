@@ -4,6 +4,7 @@ import (
 	"fpgschiba.com/automation-meal/router/auth"
 	"fpgschiba.com/automation-meal/router/backups"
 	"fpgschiba.com/automation-meal/router/base"
+	"fpgschiba.com/automation-meal/router/jobs"
 	"fpgschiba.com/automation-meal/router/permissions"
 	"fpgschiba.com/automation-meal/router/roles"
 	"fpgschiba.com/automation-meal/router/users"
@@ -46,6 +47,17 @@ func GetRouter() *gin.Engine {
 		backupsGroup := apiGroup.Group("/backups")
 		{
 			backupsGroup.GET("/", backups.ListBackups)
+			backupsGroup.GET("/:id", backups.DownloadBackup)
+			backupsGroup.DELETE("/:id", backups.DeleteBackup)
+		}
+		apiGroup.GET("/job-types", jobs.GetJobTypes)
+		jobsGroup := apiGroup.Group("/jobs")
+		{
+			jobsGroup.GET("/", jobs.ListJobs)
+			jobsGroup.POST("/", jobs.CreateJob)
+			jobsGroup.GET("/:id", jobs.GetJob)
+			jobsGroup.PATCH("/:id", jobs.UpdateJob)
+			jobsGroup.DELETE("/:id", jobs.DeleteJob)
 		}
 	}
 	router.POST("/auth/login", auth.Login)
