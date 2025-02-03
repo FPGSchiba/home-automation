@@ -28,12 +28,17 @@ func getClient() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	//getting client
-	credentials := options.Credential{
-		Username:   config.Database.User,
-		Password:   config.Database.Password,
-		AuthSource: DatabaseName,
+	opts := options.Client()
+	if config.Database.User != "" && config.Database.Password != "" {
+		credentials := options.Credential{
+			Username:   config.Database.User,
+			Password:   config.Database.Password,
+			AuthSource: DatabaseName,
+		}
+		opts.SetAuth(credentials)
 	}
-	client, err := mongo.Connect(ctx, options.Client().SetAuth(credentials).ApplyURI(uri))
+
+	client, err := mongo.Connect(ctx, opts.ApplyURI(uri))
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error":     err,
