@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// This is useful for storing files: https://www.mongodb.com/docs/drivers/go/v1.8/fundamentals/gridfs/
+
 func ListBackups(c *gin.Context) {
 	// List all backups
 	c.JSON(http.StatusNotImplemented, util.GetResponseWithMessage("Not Implemented"))
