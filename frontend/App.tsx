@@ -18,6 +18,7 @@ import MealDashboard from "./pages/Meals/MealDashboard";
 import UserNavigation from "./pages/Users/UserNavigation";
 import UserDetails from "./pages/Users/UserDetails";
 import UsersList from "./pages/Users/UsersList";
+import BackupDashboard from "./pages/Backups/BackupDashboard";
 
 const darkTheme = createTheme({
     palette: {
@@ -74,6 +75,9 @@ class App extends React.Component {
                             </Route>
                             <Route path={"/finance"} element={<FinanceDashboard />} />
                             <Route path={"/meal"} element={<MealDashboard />} />
+                            <Route path={"/backups"} element={<BackupDashboard />} >
+
+                            </Route>
                         </Route>
                         <Route path="/login" element={<Login />} />
                         <Route path="/reset-password" element={<ResetPassword />} />

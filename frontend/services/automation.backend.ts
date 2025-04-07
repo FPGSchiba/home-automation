@@ -98,6 +98,20 @@ class AutomationAPI {
             return {message: reason.response.data.message, status: ApiStatus.ERROR};
         }
     }
+
+    public async getFinanceVersion(): Promise<{ message: string, status: ApiStatus, version?: string }> {
+        try {
+            const response = await AutomationAPI.financeEndpoint.get('/', {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return response.data;
+        }
+        catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
+    }
 }
 
 export default AutomationAPI.getInstance();
