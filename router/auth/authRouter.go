@@ -24,28 +24,30 @@ func Login(c *gin.Context) {
 	hashedPassword := fmt.Sprintf("%x", h.Sum(nil))
 	err, exists, userId := database.DoesEmailExist(body.Email)
 	if !exists || err != nil || userId == "" {
-		c.JSON(http.StatusNotFound, util.GetResponseWithMessage(fmt.Sprintf("User with email: %s does not exist", body.Email)))
+		c.JSON(http.StatusNotFound, util.GetErrorResponseWithMessage(fmt.Sprintf("User with email: %s does not exist", body.Email)))
 		return
 	}
 	userObjectId, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("User with id: %s did not have a correct ID.", userId)))
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("User with id: %s did not have a correct ID.", userId)))
 		return
 	}
 	err, passwordMatches, user := database.PasswordMatchesUser(userObjectId, hashedPassword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Password matching failed with follwing error: %s", err.Error())))
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("Password matching failed with follwing error: %s", err.Error())))
 		return
 	}
 	if !passwordMatches || user == nil {
-		c.JSON(http.StatusForbidden, util.GetResponseWithMessage(fmt.Sprintf("Incorrect Password for user: %s", body.Email)))
+		c.JSON(http.StatusForbidden, util.GetErrorResponseWithMessage(fmt.Sprintf("Incorrect Password for user: %s", body.Email)))
 		return
 	}
+	config := util.Config{}
+	config.GetConfig()
 	claims := TokenClaims{
 		Email: body.Email,
 		ID:    userId,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(config.Security.TokenExpiration) * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "schiba.com",
 			Subject:   "Home Automation",
@@ -54,12 +56,12 @@ func Login(c *gin.Context) {
 	}
 	token, err := generateJWTToken(claims)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error generating token: %s", err.Error())))
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("Error generating token: %s", err.Error())))
 		return
 	}
 	err = database.InsertAuthEvent(models.EventLogin, userId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetResponseWithMessage(fmt.Sprintf("Error logging Event: %s", err.Error())))
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("Error logging Event: %s", err.Error())))
 		return
 	}
 	c.JSON(http.StatusOK, loginResponse{

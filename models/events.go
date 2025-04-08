@@ -8,12 +8,16 @@ const (
 	ComponentUsers   = "users"
 	ComponentFinance = "finance"
 	ComponentMeals   = "meals"
+	ComponentBackups = "backups"
 )
 
 // Event types
 const (
-	EventLogin         = "login"
-	EventPasswordReset = "password-reset"
+	EventLogin              = "login"
+	EventPasswordReset      = "password-reset"
+	EventBackupJobStarted   = "backup-job-started"
+	EventBackupJobCompleted = "backup-job-completed"
+	EventBackupJobFailed    = "backup-job-failed"
 )
 
 type Event struct {

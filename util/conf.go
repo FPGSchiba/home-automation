@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Database DatabaseConfig `yaml:"database"`
+	Security SecurityConfig `yaml:"security"`
 }
 
 type DatabaseConfig struct {
@@ -16,6 +17,10 @@ type DatabaseConfig struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Database string `yaml:"database"`
+}
+
+type SecurityConfig struct {
+	TokenExpiration int `yaml:"tokenExpiration"`
 }
 
 func (c *Config) GetConfig() *Config {

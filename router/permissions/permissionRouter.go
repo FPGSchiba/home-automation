@@ -13,7 +13,7 @@ func ListPermissions(c *gin.Context) {
 	userId := c.Keys["id"]
 	userObjectId, err := primitive.ObjectIDFromHex(userId.(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, util.GetResponseWithMessage("Invalid user ID"))
+		c.JSON(http.StatusBadRequest, util.GetErrorResponseWithMessage("Invalid user ID"))
 		return
 	}
 	err, roles := database.GetAllRolesForUser(userObjectId)

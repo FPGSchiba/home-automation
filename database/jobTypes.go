@@ -18,7 +18,23 @@ func GetJobTypesCollection(client *mongo.Client) *mongo.Collection {
 	return jobTypesCollection
 }
 
-func ListJobTypes() (error, []models.JobType) {
+func GetConfigurationFieldsForJobType(jobType string) ([]models.ConfigurationField, error) {
+	client := getClient()
+	jobTypesCollection = GetJobTypesCollection(client)
+	var jobTypeDoc models.JobType
+	err := jobTypesCollection.FindOne(context.Background(), bson.M{"identifier": jobType}).Decode(&jobTypeDoc)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":     err,
+			"component": "database",
+			"func":      "GetConfigurationFieldsForJobType",
+		}).Error()
+		return nil, err
+	}
+	return jobTypeDoc.ConfigurationFields, nil
+}
+
+func ListJobTypes() ([]models.JobType, error) {
 	client := getClient()
 	jobTypesCollection = GetJobTypesCollection(client)
 
@@ -29,7 +45,7 @@ func ListJobTypes() (error, []models.JobType) {
 			"component": "database",
 			"func":      "ListJobTypes",
 		}).Error()
-		return err, nil
+		return nil, err
 	}
 	var jobTypes []models.JobType
 	err = cursor.All(context.Background(), &jobTypes)
@@ -39,7 +55,7 @@ func ListJobTypes() (error, []models.JobType) {
 			"component": "database",
 			"func":      "ListJobTypes",
 		}).Error()
-		return err, nil
+		return nil, err
 	}
-	return nil, jobTypes
+	return jobTypes, nil
 }

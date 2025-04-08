@@ -16,7 +16,7 @@ func Middleware() gin.HandlerFunc {
 		authHeader := c.Request.Header.Get("Authorization")
 
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetResponseWithMessage("Authorization header is empty"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetErrorResponseWithMessage("Authorization header is empty"))
 			return
 		}
 
@@ -30,10 +30,10 @@ func Middleware() gin.HandlerFunc {
 				"error":          err.Error(),
 			}).Error()
 			if errors.Is(err, jwt.ErrECDSAVerification) {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetResponseWithMessage("Token is invalid"))
+				c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetErrorResponseWithMessage("Token is invalid"))
 				return
 			}
-			c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetResponseWithMessage(fmt.Sprintf("Failed token Validation: %s", err.Error())))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, util.GetErrorResponseWithMessage(fmt.Sprintf("Failed token Validation: %s", err.Error())))
 			return
 		} else {
 			c.Set("email", claims.Email)
@@ -41,7 +41,7 @@ func Middleware() gin.HandlerFunc {
 			if verifyPermissions(claims.ID, c.Request.URL.Path, c.Request.Method) {
 				c.Next()
 			} else {
-				c.AbortWithStatusJSON(http.StatusForbidden, util.GetResponseWithMessage("You do not have permission to access this resource"))
+				c.AbortWithStatusJSON(http.StatusForbidden, util.GetErrorResponseWithMessage("You do not have permission to access this resource"))
 			}
 		}
 	}
