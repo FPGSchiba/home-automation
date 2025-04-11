@@ -24,3 +24,12 @@ export interface IUser {
 export interface IUserInfo  extends IUser {
     token: string
 }
+
+export interface IBackupJob {
+    id: string,
+    name: string,
+    identifier: string,
+    configuration: any
+    schedule: string
+    schedulerId: string
+}

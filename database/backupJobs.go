@@ -54,7 +54,7 @@ func UpdateBackupJobSchedulerID(jobID string, schedulerID string) error {
 		return err
 	}
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{"schedulerID": schedulerID}}
+	update := bson.M{"$set": bson.M{"schedulerId": schedulerID}}
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return err
@@ -107,4 +107,20 @@ func UpdateBackupJob(jobID string, job models.BackupJob) error {
 		return err
 	}
 	return nil
+}
+
+func GetJobNameFromID(jobID string) (string, error) {
+	client := getClient()
+	collection := GetBackupJobsCollection(client)
+	id, err := primitive.ObjectIDFromHex(jobID)
+	if err != nil {
+		return "", err
+	}
+	filter := bson.M{"_id": id}
+	var job models.BackupJob
+	err = collection.FindOne(context.Background(), filter).Decode(&job)
+	if err != nil {
+		return "", err
+	}
+	return job.Name, nil
 }

@@ -11,9 +11,11 @@ export enum FrontendPermissions {
     financeWrite = 'finance.write',
     mealRead = 'meal.read',
     mealWrite = 'meal.write',
+    backupsRead = 'backups.read',
+    backupsWrite = 'backups.write',
 }
 
-const writeMethods = ['POST', 'PUT', 'DELETE'];
+const writeMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
 
 export function hasPermission(permission: FrontendPermissions, permissions: FrontendPermissions[]): boolean {
     return  permissions.includes(permission);
@@ -31,7 +33,7 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                         if (route.methods.includes('GET')) {
                             mappedPermissions.push(FrontendPermissions.settingsRead);
                         }
-                        if (route.methods.every(method => writeMethods.includes(method))) {
+                        if (route.methods.some(method => writeMethods.includes(method))) {
                             mappedPermissions.push(FrontendPermissions.settingsWrite);
                         }
                         break;
@@ -39,7 +41,7 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                         if (route.methods.includes('GET')) {
                             mappedPermissions.push(FrontendPermissions.usersRead);
                         }
-                        if (route.methods.every(method => writeMethods.includes(method))) {
+                        if (route.methods.some(method => writeMethods.includes(method))) {
                             mappedPermissions.push(FrontendPermissions.usersWrite);
                         }
                         break;
@@ -47,7 +49,7 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                         if (route.methods.includes('GET')) {
                             mappedPermissions.push(FrontendPermissions.rolesRead);
                         }
-                        if (route.methods.every(method => writeMethods.includes(method))) {
+                        if (route.methods.some(method => writeMethods.includes(method))) {
                             mappedPermissions.push(FrontendPermissions.rolesWrite);
                         }
                         break;
@@ -55,7 +57,7 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                         if (route.methods.includes('GET')) {
                             mappedPermissions.push(FrontendPermissions.financeRead);
                         }
-                        if (route.methods.every(method => writeMethods.includes(method))) {
+                        if (route.methods.some(method => writeMethods.includes(method))) {
                             mappedPermissions.push(FrontendPermissions.financeWrite);
                         }
                         break;
@@ -63,8 +65,16 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                         if (route.methods.includes('GET')) {
                             mappedPermissions.push(FrontendPermissions.mealRead);
                         }
-                        if (route.methods.every(method => writeMethods.includes(method))) {
+                        if (route.methods.some(method => writeMethods.includes(method))) {
                             mappedPermissions.push(FrontendPermissions.mealWrite);
+                        }
+                        break;
+                    case 'backups':
+                        if (route.methods.includes('GET')) {
+                            mappedPermissions.push(FrontendPermissions.backupsRead);
+                        }
+                        if (route.methods.some(method => writeMethods.includes(method))) {
+                            mappedPermissions.push(FrontendPermissions.backupsWrite);
                         }
                         break;
                     default:
@@ -84,7 +94,9 @@ export function remapPermissions(permissions: Permission[]): FrontendPermissions
                     FrontendPermissions.financeRead,
                     FrontendPermissions.financeWrite,
                     FrontendPermissions.mealRead,
-                    FrontendPermissions.mealWrite
+                    FrontendPermissions.mealWrite,
+                    FrontendPermissions.backupsRead,
+                    FrontendPermissions.backupsWrite
                 ]
             }
         })

@@ -35,6 +35,7 @@ func validateSchedule(schedule string) bool {
 	return true
 }
 
+/*
 func saveJobToDatabase(job models.BackupJob, schedulerID uuid2.UUID) (bool, string, error) {
 	jobID, err := database.InsertBackupJob(job)
 	if err != nil {
@@ -58,8 +59,9 @@ func saveJobToDatabase(job models.BackupJob, schedulerID uuid2.UUID) (bool, stri
 	}).Info("SFTP job created successfully")
 	return true, jobID, nil
 }
+*/
 
-func handleJobCreationOrUpdate(jobType string, config map[string]interface{}, schedule string, oldSchedulerID *uuid2.UUID) (models.BackupJob, uuid2.UUID, error) {
+func handleJobCreationOrUpdate(jobID string, jobType string, config map[string]interface{}, schedule string, oldSchedulerID *uuid2.UUID) (models.BackupJob, uuid2.UUID, error) {
 	var schedulerID uuid2.UUID
 	var err error
 	var job models.BackupJob
@@ -72,7 +74,7 @@ func handleJobCreationOrUpdate(jobType string, config map[string]interface{}, sc
 			Password:     config["Password"].(string),
 			DatabaseName: config["DatabaseName"].(string),
 		}
-		schedulerID, err = backup.CreateMongoBackupJob(input, schedule)
+		schedulerID, err = backup.CreateMongoBackupJob(input, schedule, jobID)
 	case "sftp":
 		input := backup.SFTPInput{
 			Host:     config["Host"].(string),
@@ -81,7 +83,7 @@ func handleJobCreationOrUpdate(jobType string, config map[string]interface{}, sc
 			Password: config["Password"].(string),
 			Path:     config["Path"].(string),
 		}
-		schedulerID, err = backup.CreateSFTPBackupJob(input, schedule)
+		schedulerID, err = backup.CreateSFTPBackupJob(input, schedule, jobID)
 	default:
 		return job, schedulerID, errors.New("unsupported job type")
 	}
@@ -104,8 +106,8 @@ func handleJobCreationOrUpdate(jobType string, config map[string]interface{}, sc
 	job = models.BackupJob{
 		Identifier:    jobType,
 		Configuration: config,
-		SchedulerID:   schedulerID.String(),
 		Schedule:      schedule,
+		SchedulerID:   schedulerID.String(),
 	}
 
 	return job, schedulerID, nil
@@ -165,15 +167,47 @@ func CreateJob(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, util.GetErrorResponseAndMessage(err, message))
 		return
 	}
+	job := models.BackupJob{
+		Identifier:    body.JobTypeIdentifier,
+		Configuration: body.Configuration,
+		Schedule:      body.Schedule,
+		Name:          body.Name,
+	}
 
-	job, schedulerID, err := handleJobCreationOrUpdate(body.JobTypeIdentifier, body.Configuration, body.Schedule, nil)
+	jobID, err := database.InsertBackupJob(job)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to create job"))
 		return
 	}
 
-	success, jobID, err := saveJobToDatabase(job, schedulerID)
-	handleJobResponse(c, success, false, jobID, err)
+	_, schedulerID, err := handleJobCreationOrUpdate(jobID, body.JobTypeIdentifier, body.Configuration, body.Schedule, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to create job"))
+		err := database.DeleteBackupJob(jobID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to create job and failed to delete job from database"))
+			return
+		}
+		return
+	}
+
+	err = database.UpdateBackupJobSchedulerID(jobID, schedulerID.String())
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to update job in database"))
+		err = backup.RemoveJob(schedulerID)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"component": "CreateJob",
+				"method":    c.Request.Method,
+				"path":      c.Request.URL.Path,
+				"error":     err.Error(),
+			}).Error("Failed to remove job from scheduler")
+			return
+		}
+		return
+	}
+
+	handleJobResponse(c, true, false, jobID, err)
 }
 
 func GetJob(c *gin.Context) {
@@ -227,7 +261,7 @@ func UpdateJob(c *gin.Context) {
 	}
 
 	oldSchedulerID := uuid2.UUID(uuid.FromStringOrNil(job.SchedulerID))
-	updatedJob, _, err := handleJobCreationOrUpdate(body.JobTypeIdentifier, body.Configuration, body.Schedule, &oldSchedulerID)
+	updatedJob, _, err := handleJobCreationOrUpdate(jobId, body.JobTypeIdentifier, body.Configuration, body.Schedule, &oldSchedulerID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to update job"))
 		return

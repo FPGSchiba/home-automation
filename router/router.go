@@ -47,8 +47,15 @@ func GetRouter() *gin.Engine {
 		backupsGroup := apiGroup.Group("/backups")
 		{
 			backupsGroup.GET("/", backups.ListBackups)
-			backupsGroup.GET("/:id", backups.DownloadBackup)
+			backupsGroup.GET("/:id/download", backups.DownloadBackup)
 			backupsGroup.DELETE("/:id", backups.DeleteBackup)
+			backupsGroup.GET("/:id", backups.GetBackupDetails)
+			backupsGroup.GET("/:id/logs", backups.GetBackupLogs)
+			backupsSettingsGroup := backupsGroup.Group("/settings")
+			{
+				backupsSettingsGroup.GET("/", backups.GetBackupSettings)
+				backupsSettingsGroup.POST("/", backups.UpdateBackupSettings)
+			}
 		}
 		apiGroup.GET("/job-types", jobs.GetJobTypes)
 		jobsGroup := apiGroup.Group("/jobs")

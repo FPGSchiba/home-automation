@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "node prod-esbuild.mjs",
     "dev": "node esbuild.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,9 +17,9 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@hookform/resolvers": "^3.9.1",
-    "@mui/icons-material": "^6.1.6",
-    "@mui/lab": "^6.0.0-beta.14",
-    "@mui/material": "^6.1.6",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/lab": "^7.0.0-beta.11",
+    "@mui/material": "^7.0.2",
     "@mui/x-data-grid": "^7.22.1",
     "@sentry/esbuild-plugin": "^2.22.2",
     "@sentry/react": "^8.26.0",

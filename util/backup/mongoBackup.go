@@ -13,13 +13,9 @@ type MongoInput struct {
 	Password     string `json:"password" bson:"password"`
 }
 
-func CreateMongoBackupJob(input MongoInput, schedule string) (uuid.UUID, error) {
+func CreateMongoBackupJob(input MongoInput, schedule string, jobID string) (uuid.UUID, error) {
 	scheduler = getScheduler()
-	job, err := scheduler.NewJob(gocron.CronJob(schedule, false), gocron.NewTask(dummy))
-	if err != nil {
-		return uuid.UUID{}, err
-	}
-	_, err = scheduler.Update(job.ID(), gocron.CronJob(schedule, false), gocron.NewTask(runMongoBackup, job.ID(), input))
+	job, err := scheduler.NewJob(gocron.CronJob(schedule, false), gocron.NewTask(runMongoBackup, jobID, input))
 	if err != nil {
 		return uuid.UUID{}, err
 	}

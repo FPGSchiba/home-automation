@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -12,7 +13,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import {FrontendPermissions, hasPermission} from "../services/permissions";
 import vngdLogo from '../resources/images/vanguardSemperDucimusLogo.png';
-import {useEffect} from "react";
 
 const nonHeaderLocations = ["/login", "/reset-password"];
 
@@ -70,6 +70,9 @@ export function Header() {
                 case 'users':
                     setValue('/users');
                     break;
+                case 'backups':
+                    setValue('/backups');
+                    break;
                 default:
                     setValue('/');
                     break;
@@ -92,6 +95,7 @@ export function Header() {
                                 aria-label="secondary tabs example"
                             >
                                 <Tab value="/home" label="Home" />
+                                {hasPermission(FrontendPermissions.backupsRead, permissions) ? <Tab value="/backups" label="Backups" /> : <></>}
                                 {hasPermission(FrontendPermissions.financeRead, permissions) ? <Tab value="/finance" label="Finance" /> : <></>}
                                 {hasPermission(FrontendPermissions.mealRead, permissions) ? <Tab value="/meal" label="Meals" /> : <></>}
                                 {hasPermission(FrontendPermissions.settingsRead, permissions) ? <Tab value="/settings" label="Settings"/> : <></>}

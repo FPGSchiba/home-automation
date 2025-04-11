@@ -19,6 +19,13 @@ import UserNavigation from "./pages/Users/UserNavigation";
 import UserDetails from "./pages/Users/UserDetails";
 import UsersList from "./pages/Users/UsersList";
 import BackupDashboard from "./pages/Backups/BackupDashboard";
+import BackupList from "./pages/Backups/BackupList";
+import BackupSettings from "./pages/Backups/BackupSettings";
+import BackupJobList from "./pages/Backups/BackupJobList";
+import BackupJobDetails from "./pages/Backups/BackupJobDetails";
+import BackupDetails from "./pages/Backups/BackupDetails";
+import BackupNavigation from "./pages/Backups/BackupNavigation";
+
 
 const darkTheme = createTheme({
     palette: {
@@ -75,8 +82,13 @@ class App extends React.Component {
                             </Route>
                             <Route path={"/finance"} element={<FinanceDashboard />} />
                             <Route path={"/meal"} element={<MealDashboard />} />
-                            <Route path={"/backups"} element={<BackupDashboard />} >
-
+                            <Route path={"/backups"} element={<BackupNavigation />} >
+                                <Route path={""} element={<BackupDashboard />} />
+                                <Route path={"list"} element={<BackupList />} />
+                                <Route path={"settings"} element={<BackupSettings />} />
+                                <Route path={"jobs"} element={<BackupJobList />} />
+                                <Route path={"jobs/:id"} element={<BackupJobDetails />} />
+                                <Route path={":id"} element={<BackupDetails />} />
                             </Route>
                         </Route>
                         <Route path="/login" element={<Login />} />

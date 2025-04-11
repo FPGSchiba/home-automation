@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -61,6 +62,12 @@ func GetErrorResponseAndMessage(err error, message string) gin.H {
 		}
 		return gin.H{"errors": out, "status": "error", "message": message}
 	}
+
+	log.WithFields(log.Fields{
+		"component": "util",
+		"func":      "GetErrorResponseAndMessage",
+		"error":     err.Error(),
+	}).Error()
 
 	return gin.H{"message": message, "status": "error"}
 }

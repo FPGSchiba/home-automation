@@ -14,7 +14,7 @@ esbuild
         entryPoints: ["frontend/index.tsx", "frontend/resources/styles/index.scss"],
         outdir: "public/assets",
         bundle: true,
-        minify: false,
+        minify: true,
         platform: 'browser',
         inject: [path.resolve('node_modules/node-stdlib-browser/helpers/esbuild/shim.js')],
         define: {
@@ -29,6 +29,11 @@ esbuild
             }),
             plugin(stdLibBrowser),
             YAMLPlugin({}),
+            sentryEsbuildPlugin({
+                authToken: process.env.SENTRY_AUTH_TOKEN,
+                org: "fire-phoenix-games",
+                project: "home-automation-frontend",
+            }),
         ],
         loader: {
             ".png": "dataurl",
@@ -38,6 +43,5 @@ esbuild
     })
     .then((r) =>  {
             console.log("⚡ Build complete! ⚡");
-            r.watch().then(r => console.log('watching...'));
     })
     .catch(() => process.exit(1));

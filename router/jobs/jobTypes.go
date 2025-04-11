@@ -11,6 +11,7 @@ type ListJobTypesResponse struct {
 }
 
 type createJobRequest struct {
+	Name              string                 `json:"name" binding:"required"`
 	JobTypeIdentifier string                 `json:"jobTypeIdentifier" binding:"required"`
 	Configuration     map[string]interface{} `json:"configuration" binding:"required"`
 	Schedule          string                 `json:"schedule" binding:"required"`

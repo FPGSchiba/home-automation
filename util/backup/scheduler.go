@@ -1,11 +1,15 @@
 package backup
 
 import (
+	"fmt"
 	"fpgschiba.com/automation-meal/database"
+	"fpgschiba.com/automation-meal/models"
 	"fpgschiba.com/automation-meal/util"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 var scheduler gocron.Scheduler
@@ -55,7 +59,7 @@ func StartScheduler() {
 				Password: job.Configuration["Password"].(string),
 				Path:     job.Configuration["Path"].(string),
 			}
-			jobID, err := CreateSFTPBackupJob(input, job.Schedule) // TODO: use the mongoDB jobID for all JobIDs, else it is very stupid if it gets lost while restarting the scheduler
+			jobID, err := CreateSFTPBackupJob(input, job.Schedule, job.ID.Hex())
 			if err != nil {
 				panic(err)
 			}
@@ -166,4 +170,56 @@ func ValidateConfiguration(identifier string, config map[string]interface{}) (bo
 	}
 
 	return true, nil
+}
+
+func handleRunFailure(jobID string, logs []models.BackupLog, startedAt time.Time, err error) {
+	log.WithFields(log.Fields{
+		"component": "backup",
+		"func":      "handleRunFailure",
+		"jobID":     jobID,
+		"error":     err.Error(),
+	}).Error("Backup job failed, beginning to handle failure")
+	t := time.Now()
+	jobName, err := database.GetJobNameFromID(jobID)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "handleRunFailure",
+			"jobID":     jobID,
+			"error":     err.Error(),
+		}).Error("Failed to get job name from ID")
+		return
+	}
+
+	jobIDObj, err := primitive.ObjectIDFromHex(jobID)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "handleRunFailure",
+			"jobID":     jobID,
+			"error":     err.Error(),
+		}).Error("Failed to convert jobID to ObjectID")
+		return
+	}
+
+	meta := models.BackupMetadata{
+		JobID:      jobIDObj,
+		StartedAt:  primitive.NewDateTimeFromTime(startedAt),
+		FinishedAt: primitive.NewDateTimeFromTime(t),
+		Logs:       logs,
+		JobName:    jobName,
+		Failed:     true,
+	}
+
+	// Upload empty file to GridFS
+	err = database.UploadEmptyFile(fmt.Sprintf("backup-%s-%s.zip", jobID, t.Format("2006-01-02-15-04")), meta)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "handleRunFailure",
+			"jobID":     jobID,
+			"error":     err.Error(),
+		}).Error("Failed to upload failed Backup Results to GridFS")
+		return
+	}
 }

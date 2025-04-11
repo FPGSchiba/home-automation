@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
 import https from 'https';
-import {IUserInfo} from "../store/types";
+import {IBackupJob, IUserInfo} from "../store/types";
 import config from "../conf.yaml";
 import {Permission} from "../store/user";
 
@@ -15,6 +15,7 @@ class AutomationAPI {
     protected static authEndpoint: AxiosInstance;
     protected static mealEndpoint: AxiosInstance;
     protected static financeEndpoint: AxiosInstance;
+    protected static backupEndpoint: AxiosInstance;
     private token: string;
     private static instance: AutomationAPI;
 
@@ -30,7 +31,8 @@ class AutomationAPI {
         if (AutomationAPI.userEndpoint !== undefined &&
             AutomationAPI.authEndpoint !== undefined &&
             AutomationAPI.mealEndpoint !== undefined &&
-            AutomationAPI.financeEndpoint !== undefined) {
+            AutomationAPI.financeEndpoint !== undefined &&
+            AutomationAPI.backupEndpoint !== undefined) {
             return;
         }
 
@@ -44,6 +46,7 @@ class AutomationAPI {
         const userApiHost = config.frontend["user-api-host"];
         const mealApiHost = config.frontend["meal-api-host"];
         const financeApiHost = config.frontend["finance-api-host"];
+        const backupApiHost = config.frontend["backup-api-host"];
 
         AutomationAPI.userEndpoint = axios.create({
             baseURL: userApiHost + apiPath,
@@ -62,6 +65,11 @@ class AutomationAPI {
 
         AutomationAPI.financeEndpoint = axios.create({
             baseURL: financeApiHost + apiPath,
+            httpsAgent,
+        });
+
+        AutomationAPI.backupEndpoint = axios.create({
+            baseURL: backupApiHost + apiPath,
             httpsAgent,
         });
 
@@ -109,6 +117,19 @@ class AutomationAPI {
             return response.data;
         }
         catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
+    }
+
+    public async getBackupJobs(): Promise<{ message: string, status: ApiStatus, jobs?: IBackupJob[] }> {
+        try {
+            const reponse = await AutomationAPI.backupEndpoint.get('/jobs', {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return reponse.data;
+        } catch (reason) {
             return {message: reason.response.data.message, status: ApiStatus.ERROR};
         }
     }

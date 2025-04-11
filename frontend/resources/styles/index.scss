@@ -17,4 +17,5 @@ body {
   @include meta.load-css("pages/login");
   @include meta.load-css("pages/reset-password");
   @include meta.load-css("pages/users/users");
+  @include meta.load-css("pages/backups/job-list");
 }
