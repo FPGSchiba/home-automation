@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fpgschiba.com/automation-meal/models"
+	"fpgschiba.com/automation-meal/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -57,7 +58,7 @@ func DoesEmailExist(email string) (error, bool, string) {
 	return nil, true, user.ID.Hex()
 }
 
-func PasswordMatchesUser(userId primitive.ObjectID, hashedPassword string) (error, bool, *models.User) {
+func PasswordMatchesUser(userId primitive.ObjectID, password string) (error, bool, *models.User) {
 	client = getClient()
 	usersCollection = GetUsersCollection(client)
 
@@ -75,7 +76,7 @@ func PasswordMatchesUser(userId primitive.ObjectID, hashedPassword string) (erro
 	if err != nil {
 		return err, false, nil
 	}
-	if user.PasswordHash == hashedPassword {
+	if util.VerifyPassword(user.PasswordHash, password) {
 		return nil, true, &user
 	}
 	return nil, false, nil

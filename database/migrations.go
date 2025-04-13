@@ -2,10 +2,9 @@ package database
 
 import (
 	"context"
-	"crypto/sha256"
-	"fmt"
 	"fpgschiba.com/automation-meal/models"
 	"fpgschiba.com/automation-meal/router/roles"
+	"fpgschiba.com/automation-meal/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -109,10 +108,15 @@ func migrationFirstUser(client *mongo.Client) error {
 			},
 		},
 	})
-	//creating User
-	h := sha256.New()
-	h.Write([]byte("Password1")) // TODO: Change this to a not clear text password
-	hashedPassword := fmt.Sprintf("%x", h.Sum(nil))
+	hashedPassword, err := util.HashPassword("Password1")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error":     err,
+			"component": "database",
+			"func":      "migrationFirstUser",
+		}).Error()
+		return err
+	}
 	userResult, err := usersCollection.InsertOne(context.Background(), models.User{
 		Email:             "jann.erhardt@icloud.com",
 		DisplayName:       "Jann Erhardt",

@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/adhocore/gronx v1.19.5
+	github.com/alexedwards/argon2id v1.0.0
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/gin-contrib/static v1.1.2
 	github.com/gin-gonic/gin v1.10.0

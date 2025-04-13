@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"fpgschiba.com/automation-meal/database"
 	"fpgschiba.com/automation-meal/models"
@@ -19,9 +18,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, util.GetErrorResponse(err))
 		return
 	}
-	h := sha256.New()
-	h.Write([]byte(body.Password))
-	hashedPassword := fmt.Sprintf("%x", h.Sum(nil))
 	err, exists, userId := database.DoesEmailExist(body.Email)
 	if !exists || err != nil || userId == "" {
 		c.JSON(http.StatusNotFound, util.GetErrorResponseWithMessage(fmt.Sprintf("User with email: %s does not exist", body.Email)))
@@ -32,7 +28,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("User with id: %s did not have a correct ID.", userId)))
 		return
 	}
-	err, passwordMatches, user := database.PasswordMatchesUser(userObjectId, hashedPassword)
+	err, passwordMatches, user := database.PasswordMatchesUser(userObjectId, body.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetErrorResponseWithMessage(fmt.Sprintf("Password matching failed with follwing error: %s", err.Error())))
 		return
