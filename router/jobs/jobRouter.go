@@ -11,6 +11,7 @@ import (
 	"github.com/gofrs/uuid/v5"
 	uuid2 "github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 )
@@ -35,33 +36,7 @@ func validateSchedule(schedule string) bool {
 	return true
 }
 
-/*
-func saveJobToDatabase(job models.BackupJob, schedulerID uuid2.UUID) (bool, string, error) {
-	jobID, err := database.InsertBackupJob(job)
-	if err != nil {
-		err = backup.RemoveJob(schedulerID)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"component": "CreateJob",
-				"method":    "saveJobToDatabase",
-				"path":      "/jobs",
-				"error":     err.Error(),
-			}).Error("Failed to remove job from scheduler")
-			return false, "Failed to create Job in Database and Failed remove job from scheduler", err
-		}
-		return false, "Failed to create SFTP job", err
-	}
-	log.WithFields(log.Fields{
-		"component": "CreateJob",
-		"method":    "saveJobToDatabase",
-		"path":      "/jobs",
-		"jobID":     jobID,
-	}).Info("SFTP job created successfully")
-	return true, jobID, nil
-}
-*/
-
-func handleJobCreationOrUpdate(jobID string, jobType string, config map[string]interface{}, schedule string, oldSchedulerID *uuid2.UUID) (models.BackupJob, uuid2.UUID, error) {
+func handleJobCreationOrUpdate(jobID, jobType, jobName string, config map[string]interface{}, schedule string, oldSchedulerID *uuid2.UUID) (models.BackupJob, uuid2.UUID, error) {
 	var schedulerID uuid2.UUID
 	var err error
 	var job models.BackupJob
@@ -103,36 +78,25 @@ func handleJobCreationOrUpdate(jobID string, jobType string, config map[string]i
 		}
 	}
 
+	jobIDObj, err := primitive.ObjectIDFromHex(jobID)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "JobHandler",
+			"error":     err.Error(),
+		}).Error("Failed to convert job ID to ObjectID")
+		return job, schedulerID, err
+	}
+
 	job = models.BackupJob{
+		ID:            &jobIDObj,
 		Identifier:    jobType,
 		Configuration: config,
 		Schedule:      schedule,
 		SchedulerID:   schedulerID.String(),
+		Name:          jobName,
 	}
 
 	return job, schedulerID, nil
-}
-
-func handleJobResponse(c *gin.Context, success bool, update bool, message string, err error) {
-	if !success {
-		log.WithFields(log.Fields{
-			"component": "JobHandler",
-			"error":     err,
-		}).Error(message)
-		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, message))
-		return
-	}
-	if update {
-		c.JSON(http.StatusOK, util.GetResponse("Successfully updated job", true))
-		return
-	}
-	c.JSON(http.StatusCreated, createJobResponse{
-		Response: util.Response{
-			Status:  "success",
-			Message: "Successfully created job",
-		},
-		JobID: message,
-	})
 }
 
 func ListJobs(c *gin.Context) {
@@ -153,7 +117,7 @@ func ListJobs(c *gin.Context) {
 func CreateJob(c *gin.Context) {
 	body := createJobRequest{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, util.GetErrorResponse(err))
+		c.JSON(http.StatusBadRequest, util.GetErrorResponseAndMessage(err, "Failed to parse request body"))
 		return
 	}
 
@@ -179,7 +143,7 @@ func CreateJob(c *gin.Context) {
 		return
 	}
 
-	_, schedulerID, err := handleJobCreationOrUpdate(jobID, body.JobTypeIdentifier, body.Configuration, body.Schedule, nil)
+	job, schedulerID, err := handleJobCreationOrUpdate(jobID, body.JobTypeIdentifier, body.Name, body.Configuration, body.Schedule, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to create job"))
 		err := database.DeleteBackupJob(jobID)
@@ -207,7 +171,13 @@ func CreateJob(c *gin.Context) {
 		return
 	}
 
-	handleJobResponse(c, true, false, jobID, err)
+	c.JSON(http.StatusCreated, createJobResponse{
+		Response: util.Response{
+			Status:  "success",
+			Message: "Successfully created job",
+		},
+		Job: job,
+	})
 }
 
 func GetJob(c *gin.Context) {
@@ -235,7 +205,7 @@ func UpdateJob(c *gin.Context) {
 	jobId := c.Param("id")
 	body := updateJobRequest{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, util.GetErrorResponse(err))
+		c.JSON(http.StatusBadRequest, util.GetErrorResponseAndMessage(err, "Failed to parse request body"))
 		return
 	}
 
@@ -261,7 +231,7 @@ func UpdateJob(c *gin.Context) {
 	}
 
 	oldSchedulerID := uuid2.UUID(uuid.FromStringOrNil(job.SchedulerID))
-	updatedJob, _, err := handleJobCreationOrUpdate(jobId, body.JobTypeIdentifier, body.Configuration, body.Schedule, &oldSchedulerID)
+	updatedJob, _, err := handleJobCreationOrUpdate(jobId, body.JobTypeIdentifier, body.Name, body.Configuration, body.Schedule, &oldSchedulerID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to update job"))
 		return
@@ -317,7 +287,7 @@ func DeleteJob(c *gin.Context) {
 func GetJobTypes(c *gin.Context) {
 	jobTypes, err := database.ListJobTypes()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, util.GetErrorResponse(err))
+		c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to fetch job types"))
 		return
 	}
 	c.JSON(http.StatusOK, ListJobTypesResponse{

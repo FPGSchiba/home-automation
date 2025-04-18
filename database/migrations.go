@@ -18,8 +18,9 @@ func StartMigrations() {
 	client = getClient()
 	//getting collection
 	migrations := map[string]interface{}{
-		"first_user":       migrationFirstUser,
-		"add_job_types_v1": migrationAddJobTypesV1,
+		"first_user":                  migrationFirstUser,
+		"add_job_types_v1":            migrationAddJobTypesV1,
+		"add_default_backup_settings": migrationAddDefaultBackupSettings,
 	}
 	migrationCollection := GetMigrationCollection(client)
 	doneMigrations, err := migrationCollection.Find(context.Background(), bson.M{})
@@ -196,4 +197,15 @@ func migrationAddJobTypesV1(client *mongo.Client) error {
 		},
 	})
 	return err
+}
+
+func migrationAddDefaultBackupSettings(client *mongo.Client) error {
+	backupSettingsCollection := GetBackupSettingsCollection(client)
+	_, err := backupSettingsCollection.InsertOne(context.Background(), models.BackupSettings{
+		BackupRetentionDays: 365,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -16,5 +16,44 @@
       margin-left: auto;
       margin-right: 8px;
     }
+
+    &.backup-job-list-dmodal {
+      border-radius: 8px;
+    }
+
+    &.backup-job-list-cmodal {
+      border-radius: 8px;
+    }
+
+    &.backup-job-list-dmodal-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      margin-top: 15px;
+
+      button {
+        margin-right: 10px;
+      }
+    }
+
+    &.backup-job-list-cmodal-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      margin-top: 15px;
+
+      button {
+        margin-right: 10px;
+      }
+    }
+
+    &.backup-job-list-b-wrapper {
+      margin-top: 10px;
+    }
+
+    &.backup-job-list-b-plus {
+      margin-right: 4px;
+      font-weight: bold;
+    }
   }
 }

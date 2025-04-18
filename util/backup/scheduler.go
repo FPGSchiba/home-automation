@@ -73,6 +73,14 @@ func StartScheduler() {
 
 		}
 	}
+	err = createRetentionCheckerJob()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "StartScheduler",
+			"error":     err.Error(),
+		}).Panic("Failed to start retention checker job")
+	}
 }
 
 func StopScheduler() {
@@ -123,10 +131,6 @@ func RemoveJob(jobID uuid.UUID) error {
 		return err
 	}
 	return nil
-}
-
-func dummy() {
-	// Dummy function to be able to add the JobID to a Job
 }
 
 func ValidateConfiguration(identifier string, config map[string]interface{}) (bool, error) {
@@ -221,5 +225,55 @@ func handleRunFailure(jobID string, logs []models.BackupLog, startedAt time.Time
 			"error":     err.Error(),
 		}).Error("Failed to upload failed Backup Results to GridFS")
 		return
+	}
+}
+
+func createRetentionCheckerJob() error {
+	scheduler := getScheduler()
+	_, err := scheduler.NewJob(
+		gocron.CronJob("0 0 * * *", false),
+		gocron.NewTask(runCheckRetention),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func runCheckRetention() {
+	settings, err := database.GetBackupSettings()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "runCheckRetention",
+			"error":     err.Error(),
+		}).Error("Failed to get backup settings")
+		return
+	}
+	backups, err := database.ListBackups("")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "runCheckRetention",
+			"error":     err.Error(),
+		}).Error("Failed to list backups")
+		return
+	}
+	for _, backup := range backups {
+		log.WithFields(log.Fields{
+			"component": "backup",
+			"func":      "runCheckRetention",
+			"backupID":  backup.ID.Hex(),
+		}).Debug("Checking backup")
+		if backup.StartedAt.Time().Add(time.Duration(settings.BackupRetentionDays) * time.Minute * 1440).Before(time.Now()) {
+			err := database.DeleteBackup(backup.ID.Hex())
+			if err != nil {
+				log.WithFields(log.Fields{
+					"component": "backup",
+					"func":      "runCheckRetention",
+					"error":     err.Error(),
+				}).Error("Failed to delete old backup")
+			}
+		}
 	}
 }

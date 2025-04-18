@@ -14,6 +14,11 @@ export interface NotifyEvent {
     title: string
 }
 
+export interface IErrorDetail {
+    field: string
+    message: string
+}
+
 export interface IUser {
     id: string
     displayName: string
@@ -32,4 +37,11 @@ export interface IBackupJob {
     configuration: any
     schedule: string
     schedulerId: string
+}
+
+export interface IBackupJobCreate {
+    name: string,
+    identifier: string,
+    configuration: any
+    schedule: string
 }

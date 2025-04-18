@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance } from "axios";
 import https from 'https';
-import {IBackupJob, IUserInfo} from "../store/types";
+import {IBackupJob, IBackupJobCreate, IErrorDetail, IUserInfo} from "../store/types";
 import config from "../conf.yaml";
 import {Permission} from "../store/user";
 
@@ -131,6 +131,32 @@ class AutomationAPI {
             return reponse.data;
         } catch (reason) {
             return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
+    }
+
+    public async deleteBackupJob(id: string): Promise<{ message: string, status: ApiStatus }> {
+        try {
+            const response = await AutomationAPI.backupEndpoint.delete(`/jobs/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return response.data;
+        } catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR};
+        }
+    }
+
+    public async createBackupJob(job: IBackupJobCreate): Promise<{ message: string, status: ApiStatus, job?: IBackupJob, errors?: IErrorDetail[] }> {
+        try {
+            const response = await AutomationAPI.backupEndpoint.post('/jobs', job, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+            });
+            return response.data;
+        } catch (reason) {
+            return {message: reason.response.data.message, status: ApiStatus.ERROR, errors: reason.response.data.errors};
         }
     }
 }

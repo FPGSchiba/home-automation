@@ -13,6 +13,7 @@ import (
 )
 
 var backupsGridFS *gridfs.Bucket
+var backupSettingsCollection *mongo.Collection
 
 func GetBackupsBucket(client *mongo.Client) *gridfs.Bucket {
 	if backupsGridFS != nil {
@@ -22,6 +23,45 @@ func GetBackupsBucket(client *mongo.Client) *gridfs.Bucket {
 	backupsGridFS, _ = gridfs.NewBucket(client.Database(DatabaseName))
 
 	return backupsGridFS
+}
+
+func GetBackupSettingsCollection(client *mongo.Client) *mongo.Collection {
+	if backupSettingsCollection != nil {
+		return backupSettingsCollection
+	}
+
+	backupSettingsCollection = client.Database(DatabaseName).Collection("backupSettings")
+
+	return backupSettingsCollection
+}
+
+func GetBackupSettings() (models.BackupSettings, error) {
+	client := getClient()
+	collection := GetBackupSettingsCollection(client)
+	var settings models.BackupSettings
+	err := collection.FindOne(nil, bson.M{}).Decode(&settings)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return models.BackupSettings{}, nil
+		}
+		return models.BackupSettings{}, err
+	}
+	return settings, nil
+}
+
+func UpdateBackupSettings(settings models.BackupSettings) error {
+	client := getClient()
+	collection := GetBackupSettingsCollection(client)
+	filter := bson.M{}
+	update := bson.M{
+		"$set": settings,
+	}
+	opts := options.Update().SetUpsert(true)
+	_, err := collection.UpdateOne(nil, filter, update, opts)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func UploadBackup(filename string, filePath string, meta models.BackupMetadata) error {

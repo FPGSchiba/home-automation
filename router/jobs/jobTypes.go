@@ -19,7 +19,7 @@ type createJobRequest struct {
 
 type createJobResponse struct {
 	util.Response
-	JobID string `json:"jobId"`
+	Job models.BackupJob `json:"job"`
 }
 
 type listJobsResponse struct {
@@ -33,6 +33,7 @@ type getJobResponse struct {
 }
 
 type updateJobRequest struct {
+	Name              string                 `json:"name" binding:"required"`
 	JobTypeIdentifier string                 `json:"jobTypeIdentifier" binding:"required"`
 	Configuration     map[string]interface{} `json:"configuration" binding:"required"`
 	Schedule          string                 `json:"schedule" binding:"required"`
