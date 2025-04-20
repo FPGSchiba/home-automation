@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	"fpgschiba.com/automation-meal/models"
-	"fpgschiba.com/automation-meal/router/roles"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/models"
+	"fpgschiba.com/automation/router/roles"
+	"fpgschiba.com/automation/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

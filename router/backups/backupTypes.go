@@ -1,8 +1,8 @@
 package backups
 
 import (
-	"fpgschiba.com/automation-meal/models"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/models"
+	"fpgschiba.com/automation/util"
 )
 
 type listBackupsResponse struct {

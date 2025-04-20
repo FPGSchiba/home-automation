@@ -1,8 +1,8 @@
 package permissions
 
 import (
-	"fpgschiba.com/automation-meal/router/roles"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/router/roles"
+	"fpgschiba.com/automation/util"
 )
 
 type listPermissionsResponse struct {

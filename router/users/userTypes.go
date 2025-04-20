@@ -1,6 +1,6 @@
 package users
 
-import "fpgschiba.com/automation-meal/util"
+import "fpgschiba.com/automation/util"
 
 type UserProfile struct {
 	Id                string `json:"id"`

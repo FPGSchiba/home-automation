@@ -1,14 +1,14 @@
 package router
 
 import (
-	"fpgschiba.com/automation-meal/router/auth"
-	"fpgschiba.com/automation-meal/router/backups"
-	"fpgschiba.com/automation-meal/router/base"
-	"fpgschiba.com/automation-meal/router/jobs"
-	"fpgschiba.com/automation-meal/router/permissions"
-	"fpgschiba.com/automation-meal/router/roles"
-	"fpgschiba.com/automation-meal/router/users"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/router/auth"
+	"fpgschiba.com/automation/router/backups"
+	"fpgschiba.com/automation/router/base"
+	"fpgschiba.com/automation/router/jobs"
+	"fpgschiba.com/automation/router/permissions"
+	"fpgschiba.com/automation/router/roles"
+	"fpgschiba.com/automation/router/users"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,9 @@ func GetRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(util.JSONLogMiddleware())
-	router.Use(util.CORS(util.CORSOptions{}))
+	router.Use(util.CORS(util.CORSOptions{
+		Origin: "*",
+	}))
 
 	apiGroup := router.Group("/api/v1")
 	{

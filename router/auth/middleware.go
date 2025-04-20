@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"

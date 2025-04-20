@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fpgschiba.com/automation-meal/router/roles"
+	"fpgschiba.com/automation/router/roles"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

@@ -2,8 +2,8 @@ package backups
 
 import (
 	"errors"
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
@@ -29,7 +29,7 @@ func DeleteBackup(c *gin.Context) {
 	backupId := c.Param("id")
 	err := database.DeleteBackup(backupId)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Backup not found"))
 			return
 		}
@@ -49,7 +49,7 @@ func GetBackupLogs(c *gin.Context) {
 	severity := c.Query("severity")
 	logs, err := database.GetBackupLogs(backupId, severity)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Backup not found"))
 			return
 		}
@@ -69,7 +69,7 @@ func GetBackupDetails(c *gin.Context) {
 	backupId := c.Param("id")
 	backup, err := database.GetBackupDetails(backupId)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Backup not found"))
 			return
 		}

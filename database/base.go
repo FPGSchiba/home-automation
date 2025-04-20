@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/util"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

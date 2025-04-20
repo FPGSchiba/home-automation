@@ -2,9 +2,9 @@ package backup
 
 import (
 	"fmt"
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/models"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/models"
+	"fpgschiba.com/automation/util"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"

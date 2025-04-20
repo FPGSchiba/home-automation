@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/router/roles"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/router/roles"
 	"github.com/bmatcuk/doublestar"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"slices"

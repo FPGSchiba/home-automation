@@ -2,9 +2,9 @@ package auth
 
 import (
 	"fmt"
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/models"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/models"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"

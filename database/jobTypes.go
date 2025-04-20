@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"fpgschiba.com/automation-meal/models"
+	"fpgschiba.com/automation/models"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

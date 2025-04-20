@@ -2,10 +2,10 @@ package jobs
 
 import (
 	"errors"
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/models"
-	"fpgschiba.com/automation-meal/util"
-	"fpgschiba.com/automation-meal/util/backup"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/models"
+	"fpgschiba.com/automation/util"
+	"fpgschiba.com/automation/util/backup"
 	"github.com/adhocore/gronx"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid/v5"
@@ -184,7 +184,7 @@ func GetJob(c *gin.Context) {
 	jobId := c.Param("id")
 	job, err := database.GetBackupJobFromID(jobId)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Job not found"))
 		} else {
 			c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to fetch job"))
@@ -211,7 +211,7 @@ func UpdateJob(c *gin.Context) {
 
 	job, err := database.GetBackupJobFromID(jobId)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Job not found"))
 		} else {
 			c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to fetch job"))
@@ -251,7 +251,7 @@ func DeleteJob(c *gin.Context) {
 	jobId := c.Param("id")
 	job, err := database.GetBackupJobFromID(jobId)
 	if err != nil {
-		if errors.As(err, &mongo.ErrNoDocuments) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			c.JSON(http.StatusNotFound, util.GetErrorResponseAndMessage(err, "Job not found"))
 		} else {
 			c.JSON(http.StatusInternalServerError, util.GetErrorResponseAndMessage(err, "Failed to delete job"))

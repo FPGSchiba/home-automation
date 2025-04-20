@@ -3,8 +3,8 @@ package backup
 import (
 	"archive/zip"
 	"fmt"
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/models"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/models"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	"github.com/pkg/sftp"
@@ -351,7 +351,7 @@ func uploadToGridFS(zipPath string, jobID string, startedAt time.Time, logs []mo
 	}
 
 	logs = append(logs, models.BackupLog{
-		Message:   fmt.Sprintf("Uploading backup to GridFS...", meta),
+		Message:   "Uploading backup to GridFS...",
 		Severity:  "info",
 		Timestamp: primitive.NewDateTimeFromTime(time.Now()),
 	})

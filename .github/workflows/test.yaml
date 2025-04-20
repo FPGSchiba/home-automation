@@ -1,0 +1,54 @@
+name: Run tests and upload coverage
+
+on:
+  push
+
+jobs:
+  test:
+    services:
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+        env:
+          MONGO_INITDB_DATABASE: home-test
+          MONGO_INITDB_ROOT_USERNAME: home-dev
+          MONGO_INITDB_ROOT_PASSWORD: not-so-save-password
+    name: Run tests and collect coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Replace config.yaml
+        run: |
+          rm -f config.yaml
+          echo "database:" >> config.yaml
+          echo "  host: localhost" >> config.yaml
+          echo "  port: 27017" >> config.yaml
+          echo "  user: home-dev" >> config.yaml
+          echo "  password: not-so-save-password" >> config.yaml
+          echo "  database: home-test" >> config.yaml
+          echo "security:" >> config.yaml
+          echo "  tokenExpiration: 20" >> config.yaml
+
+      - name: Run tests
+        run: go test ./... -coverprofile=coverage.txt
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

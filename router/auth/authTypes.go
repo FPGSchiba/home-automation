@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/util"
 	"github.com/golang-jwt/jwt/v5"
 )
 

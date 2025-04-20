@@ -1,7 +1,7 @@
 package backups
 
 import (
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

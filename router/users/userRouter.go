@@ -1,8 +1,8 @@
 package users
 
 import (
-	"fpgschiba.com/automation-meal/database"
-	"fpgschiba.com/automation-meal/util"
+	"fpgschiba.com/automation/database"
+	"fpgschiba.com/automation/util"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
