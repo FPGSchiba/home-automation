@@ -46,8 +46,9 @@ jobs:
           echo "security:" >> config.yaml
           echo "  tokenExpiration: 20" >> config.yaml
 
-      - name: Run tests
-        run: go test ./... -coverprofile=coverage.txt
+      - uses: robherley/go-test-action@v0
+        with:
+          testArguments: ./... -coverprofile=coverage.txt
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
