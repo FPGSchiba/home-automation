@@ -3,3 +3,7 @@ database:
   port: 27017
   user: user
   password: 1234
+security:
+  tokenExpiration: 3600
+tls:
+  enabled: false
