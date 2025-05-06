@@ -71,5 +71,11 @@ func GetRouter() *gin.Engine {
 	}
 	router.POST("/auth/login", auth.Login)
 	router.POST("/auth/reset-password", auth.ResetPassword)
+
+	// Configurations for the gin router
+	router.RemoveExtraSlash = true
+	router.RedirectTrailingSlash = false
+	router.RedirectFixedPath = false
+
 	return router
 }

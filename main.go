@@ -8,11 +8,17 @@ import (
 	"fpgschiba.com/automation/util/backup"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
 func main() {
 	engine := router.GetRouter()
+
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: false,
+		FullTimestamp: true,
+	})
 
 	var configFilepath string
 	flag.StringVar(&configFilepath, "config", "config.yaml", "The Path to the config file")
