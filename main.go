@@ -6,11 +6,9 @@ import (
 	"fpgschiba.com/automation/router"
 	"fpgschiba.com/automation/util"
 	"fpgschiba.com/automation/util/backup"
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"strings"
-)
 
 func main() {
 	engine := router.GetRouter()
@@ -28,19 +26,6 @@ func main() {
 
 	backup.StartScheduler()
 	database.StartMigrations()
-
-	// TODO: See if we keep this maybe rather use nginx container
-	if gin.Mode() == gin.ReleaseMode {
-		engine.Use(static.Serve("/", static.LocalFile("./public/assets/", true)))
-		engine.NoRoute(func(c *gin.Context) {
-			if !strings.HasPrefix(c.Request.RequestURI, "/api") {
-				c.File("./public/assets/index.html")
-			}
-			if !strings.HasPrefix(c.Request.RequestURI, "/auth") {
-				c.File("./public/assets/index.html")
-			}
-		})
-	}
 
 	defer database.Disconnect()
 	defer backup.StopScheduler()
